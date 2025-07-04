@@ -77,6 +77,48 @@ class TrieTest {
     }
 
     @Test
+    fun `insert handles city names with special characters`() {
+        val cityWithAccents = City(
+            country = "France",
+            name = "São Paulo",
+            id = 100,
+            coordinates = Coordinates(-46.6333, -23.5505)
+        )
+
+        val cityWithHyphen = City(
+            country = "France",
+            name = "Saint-Denis",
+            id = 101,
+            coordinates = Coordinates(2.3536, 48.9362)
+        )
+
+        val cityWithApostrophe = City(
+            country = "Ireland",
+            name = "Dún Laoghaire",
+            id = 102,
+            coordinates = Coordinates(-6.1358, 53.2936)
+        )
+
+        trie.insert(cityWithAccents)
+        trie.insert(cityWithHyphen)
+        trie.insert(cityWithApostrophe)
+
+        // Search by prefix that includes special characters
+        val result1 = trie.search("São")
+        val result2 = trie.search("Saint-")
+        val result3 = trie.search("Dún")
+
+        assertEquals(1, result1.size)
+        assertEquals(cityWithAccents, result1.first())
+
+        assertEquals(1, result2.size)
+        assertEquals(cityWithHyphen, result2.first())
+
+        assertEquals(1, result3.size)
+        assertEquals(cityWithApostrophe, result3.first())
+    }
+
+    @Test
     fun `search for exact match returns correct cities`() {
         val results = trie.search("London")
         assertEquals(1, results.size)
