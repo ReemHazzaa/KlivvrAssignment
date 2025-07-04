@@ -24,6 +24,8 @@ class CityRepositoryTest {
     private lateinit var assetManager: AssetManager
     private lateinit var repository: CityRepository
 
+    private lateinit var trie: Trie
+
     private val testDispatcher = StandardTestDispatcher()
 
     private val testCities = listOf(
@@ -47,7 +49,12 @@ class CityRepositoryTest {
         Dispatchers.setMain(testDispatcher)
         context = mockk()
         assetManager = mockk()
+        trie = mockk()
         every { context.assets } returns assetManager
+        every { trie.search("") } returns emptyList()
+        every { trie.search(any()) } returns testCities
+        every { trie.insert(any()) } just Runs
+        every { trie.clear() } just Runs
 
         // Mock assets/cities.json to return test data as JSON
         val jsonString = Gson().toJson(testCities)
@@ -55,7 +62,7 @@ class CityRepositoryTest {
 
         every { assetManager.open("cities.json") } returns inputStream
 
-        repository = CityRepository(context)
+        repository = CityRepository(context, trie)
     }
 
     @After

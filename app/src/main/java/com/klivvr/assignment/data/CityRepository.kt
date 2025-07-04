@@ -10,6 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import java.io.IOException
+import javax.inject.Inject
 
 /**
  * Repository responsible for loading and searching city data from a local JSON file
@@ -19,10 +20,10 @@ import java.io.IOException
  *
  * @param context The Android application context, used to access the assets folder.
  */
-class CityRepository(private val context: Context) {
-
-    // Trie structure for fast prefix search of cities
-    private val trie = Trie()
+class CityRepository @Inject constructor(
+    private val context: Context,
+    private val trie: Trie,
+) {
 
     // The full list of cities loaded from the JSON file
     private var allCities: List<City> = emptyList()
