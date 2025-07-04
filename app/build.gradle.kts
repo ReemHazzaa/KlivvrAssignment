@@ -72,5 +72,10 @@ dependencies {
     // Paging3
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
+    testImplementation(libs.androidx.paging.common)
+    // Turbine[Flow testing]
+    testImplementation(libs.turbine)
+    // MockK[Unit testing]
+    testImplementation(libs.mockk)
 
 }
