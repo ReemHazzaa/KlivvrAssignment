@@ -63,6 +63,8 @@ dependencies {
     implementation(libs.gson)
     // DI[Hilt]
     implementation(libs.hilt.android)
+    // Hilt for ViewModel and Compose Navigation
+    implementation(libs.androidx.hilt.navigation.compose)
     ksp(libs.hilt.compiler)
     // Lifecycle viewmodel compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
