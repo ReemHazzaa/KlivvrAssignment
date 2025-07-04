@@ -59,11 +59,18 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
+    // Serialization
     implementation(libs.gson)
+    // DI[Hilt]
     implementation(libs.hilt.android)
     ksp(libs.hilt.compiler)
+    // Lifecycle viewmodel compose
     implementation(libs.androidx.lifecycle.viewmodel.compose)
+    // Coroutines
     implementation(libs.bundles.coroutines)
+    testImplementation(libs.kotlinx.coroutines.test)
+    // Paging3
     implementation(libs.androidx.paging.runtime.ktx)
     implementation(libs.androidx.paging.compose)
+
 }
