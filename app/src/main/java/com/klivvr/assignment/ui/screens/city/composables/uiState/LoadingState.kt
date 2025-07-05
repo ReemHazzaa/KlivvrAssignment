@@ -1,4 +1,4 @@
-package com.klivvr.assignment.ui.composables.uiState
+package com.klivvr.assignment.ui.screens.city.composables.uiState
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,7 +11,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.klivvr.assignment.R
 
 @Composable
 fun LoadingState() {
@@ -25,7 +27,7 @@ fun LoadingState() {
         ) {
             CircularProgressIndicator()
             Text(
-                text = "Loading cities...",
+                text = stringResource(R.string.loading_cities),
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.padding(top = 16.dp)
             )

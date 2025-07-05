@@ -87,4 +87,18 @@ class CityRepository @Inject constructor(
             pagingSourceFactory = { CityPagingSource(searchResults) }
         ).flow
     }
+
+    /**
+     * Gets the total count of cities for a given search prefix.
+     * This is more efficient than fetching the whole list if we only need the count.
+     * @param prefix The prefix to search for.
+     * @return The number of matching cities.
+     */
+    suspend fun getCityCount(prefix: String): Int {
+        return withContext(Dispatchers.Default) {
+            // Return 0 for blank query, otherwise search the trie and get the size.
+            if (prefix.isBlank()) 0 else trie.search(prefix).size
+        }
+    }
+
 }

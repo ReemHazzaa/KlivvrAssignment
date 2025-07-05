@@ -1,27 +1,31 @@
-package com.klivvr.assignment.ui
+package com.klivvr.assignment.ui.screens.city
 
 import androidx.paging.PagingData
+import androidx.recyclerview.widget.DiffUtil
 import app.cash.turbine.test
+import com.klivvr.assignment.AsyncPagingDataDifferTestUtil
 import com.klivvr.assignment.data.City
 import com.klivvr.assignment.data.CityRepository
 import com.klivvr.assignment.data.Coordinates
+import com.klivvr.assignment.ui.screens.city.models.UiModel
+import io.mockk.clearAllMocks
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.test.*
-import org.junit.Assert.assertEquals
-import org.junit.Before
-import org.junit.Test
-import androidx.recyclerview.widget.DiffUtil
-import com.klivvr.assignment.AsyncPagingDataDifferTestUtil
-import io.mockk.clearAllMocks
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.assertTrue
+import org.junit.Assert
+import org.junit.Before
+import org.junit.Test
 
 @Suppress("UnusedFlow")
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -37,12 +41,19 @@ class CityViewModelTest {
         City("USA", "Los Angeles", 2, Coordinates(-118.2, 34.0))
     )
 
-    private val differUtil = AsyncPagingDataDifferTestUtil(
-        object : DiffUtil.ItemCallback<City>() {
-            override fun areItemsTheSame(oldItem: City, newItem: City): Boolean =
-                oldItem.id == newItem.id
+    private val fakeUiModels = listOf(
+        UiModel.HeaderItem('L'),
+        UiModel.CityItem(fakeCities[0]),
+        UiModel.HeaderItem('L'),
+        UiModel.CityItem(fakeCities[1])
+    )
 
-            override fun areContentsTheSame(oldItem: City, newItem: City): Boolean =
+    private val differUtil = AsyncPagingDataDifferTestUtil(
+        object : DiffUtil.ItemCallback<UiModel>() {
+            override fun areItemsTheSame(oldItem: UiModel, newItem: UiModel): Boolean =
+                oldItem.hashCode() == newItem.hashCode()
+
+            override fun areContentsTheSame(oldItem: UiModel, newItem: UiModel): Boolean =
                 oldItem == newItem
         }
     )
@@ -54,14 +65,14 @@ class CityViewModelTest {
 
         coEvery { cityRepository.loadCities() } returns Unit
         coEvery { cityRepository.getPaginatedCities("lon") } returns flowOf(
-            PagingData.from(
+            PagingData.Companion.from(
                 listOf(
                     fakeCities[0]
                 )
             )
         )
         coEvery { cityRepository.getPaginatedCities("los") } returns flowOf(
-            PagingData.from(
+            PagingData.Companion.from(
                 listOf(
                     fakeCities[1]
                 )
@@ -85,7 +96,7 @@ class CityViewModelTest {
         viewModel.cityPagingFlow.test {
             val pagingData = awaitItem()
             val snapshot = differUtil.snapshot(pagingData)
-            assertEquals(listOf(fakeCities[0]), snapshot)
+            Assert.assertEquals(listOf(fakeUiModels[0], fakeUiModels[1]), snapshot)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -104,7 +115,7 @@ class CityViewModelTest {
         viewModel.cityPagingFlow.test {
             val pagingData = awaitItem()
             val snapshot = differUtil.snapshot(pagingData)
-            assertEquals(listOf(fakeCities[1]), snapshot)
+            Assert.assertEquals(listOf(fakeUiModels[2], fakeUiModels[3]), snapshot)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -126,14 +137,14 @@ class CityViewModelTest {
 
     @Test
     fun `cityPagingFlow emits empty when no results match prefix`() = runTest {
-        coEvery { cityRepository.getPaginatedCities("zzz") } returns flowOf(PagingData.empty())
+        coEvery { cityRepository.getPaginatedCities("zzz") } returns flowOf(PagingData.Companion.empty())
 
         viewModel.onSearchQueryChange("zzz")
         advanceTimeBy(300)
 
         viewModel.cityPagingFlow.test {
             val snapshot = differUtil.snapshot(awaitItem())
-            assertTrue(snapshot.isEmpty())
+            Assert.assertTrue(snapshot.isEmpty())
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -165,7 +176,7 @@ class CityViewModelTest {
 
         viewModel.cityPagingFlow.test {
             val snapshot = differUtil.snapshot(awaitItem())
-            assertEquals(listOf(fakeCities[1]), snapshot)
+            Assert.assertEquals(listOf(fakeUiModels[2], fakeUiModels[3]), snapshot)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -177,10 +188,10 @@ class CityViewModelTest {
     @Test
     fun `searchQuery updates correctly on input`() = runTest {
         viewModel.onSearchQueryChange("Cairo")
-        assertEquals("Cairo", viewModel.searchQuery.value)
+        Assert.assertEquals("Cairo", viewModel.searchQuery.value)
 
         viewModel.onSearchQueryChange("")
-        assertEquals("", viewModel.searchQuery.value)
+        Assert.assertEquals("", viewModel.searchQuery.value)
     }
 
     @Test
@@ -191,7 +202,7 @@ class CityViewModelTest {
         val resultsA = async { differUtil.snapshot(viewModel.cityPagingFlow.first()) }
         val resultsB = async { differUtil.snapshot(viewModel.cityPagingFlow.first()) }
 
-        assertEquals(resultsA.await(), resultsB.await())
+        Assert.assertEquals(resultsA.await(), resultsB.await())
         coVerify(exactly = 1) { cityRepository.getPaginatedCities("los") }
     }
 
@@ -206,7 +217,7 @@ class CityViewModelTest {
 
         viewModel.cityPagingFlow.test {
             val snapshot = differUtil.snapshot(awaitItem())
-            assertEquals(listOf(fakeCities[0]), snapshot)
+            Assert.assertEquals(listOf(fakeUiModels[0], fakeUiModels[1]), snapshot)
             cancelAndIgnoreRemainingEvents()
         }
 
@@ -214,6 +225,5 @@ class CityViewModelTest {
         coVerify(exactly = 0) { cityRepository.getPaginatedCities("l") }
         coVerify(exactly = 0) { cityRepository.getPaginatedCities("lo") }
     }
-
 
 }

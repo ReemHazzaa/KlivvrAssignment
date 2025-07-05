@@ -1,4 +1,4 @@
-package com.klivvr.assignment.ui.composables.uiState
+package com.klivvr.assignment.ui.screens.city.composables.uiState
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box

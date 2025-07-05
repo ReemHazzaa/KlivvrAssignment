@@ -1,4 +1,4 @@
-package com.klivvr.assignment.ui.composables.uiState
+package com.klivvr.assignment.ui.screens.city.composables.uiState
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,7 +15,6 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun EmptyState(message: String) {
-    // This outer Column uses weights to position its children.
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -30,12 +29,9 @@ fun EmptyState(message: String) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // If you have a picture, it would go here.
-            // Image( ... )
-            // Spacer( ... )
             Text(
                 text = message,
-                style = MaterialTheme.typography.headlineSmall,
+                style = MaterialTheme.typography.bodyLarge,
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )

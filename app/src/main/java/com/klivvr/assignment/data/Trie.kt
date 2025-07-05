@@ -89,7 +89,7 @@ class Trie {
         while (queue.isNotEmpty()) {
             val currentNode = queue.removeFirst()
             results.addAll(currentNode.citiesAtNode)
-            queue.addAll(currentNode.children.values)
+            queue.addAll(currentNode.children.values.toList())
         }
         return results
     }

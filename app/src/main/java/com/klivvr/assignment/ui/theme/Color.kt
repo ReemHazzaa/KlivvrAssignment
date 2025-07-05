@@ -2,10 +2,40 @@ package com.klivvr.assignment.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Light Theme Colors
+val LightBackground = Color(0xFFF3F4F8)
+val LightSurface = Color(0xFFFFFFFF)
+val LightOnSurface = Color(0xFF1B1B1F)
+val LightOnSurfaceVariant = Color(0xFF74777F)
+val LightPrimary = Color(0xFF4A5FA9)
+val LightSecondaryContainer = Color(0xFFE0E0FF)
+val LightOnSecondaryContainer = Color(0xFF001550)
+val LightOutline = Color(0xFFDCDDE4)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Dark Theme Colors
+val DarkBackground = Color(0xFF1B1B1F)
+val DarkSurface = Color(0xFF2F2F33)
+val DarkOnSurface = Color(0xFFE4E2E6)
+val DarkOnSurfaceVariant = Color(0xFFC4C6CF)
+val DarkPrimary = Color(0xFFB5C3FF)
+val DarkSecondaryContainer = Color(0xFF3A446C)
+val DarkOnSecondaryContainer = Color(0xFFE0E0FF)
+val DarkOutline = Color(0xFF44474E)
+
+val TitleTextColorLight = Color(0xFF333333)
+val TitleTextColorDark = Color(0xFFEAEAEA)
+
+val FlagBackgroundColor = Color(0xFFECECEF)
+
+// --- Search Bar Colors ---
+// Light Theme
+val SearchBarUnfocusedBackgroundLight = Color(0xFFF5F5F5)
+val SearchBarFocusedContentLight = Color(0xFF333333)
+val SearchBarUnfocusedContentLight = Color(0xFF888888)
+val SearchBarFocusedBackgroundLight = Color.White // The focused background is white
+
+// Dark Theme (These are chosen to look good on a dark background)
+val SearchBarUnfocusedBackgroundDark = Color(0xFF2C2C2E)
+val SearchBarFocusedContentDark = Color(0xFFEAEAEA)
+val SearchBarUnfocusedContentDark = Color(0xFF8A8A8E)
+val SearchBarFocusedBackgroundDark = Color(0xFF1C1C1E) // A very dark grey for focus

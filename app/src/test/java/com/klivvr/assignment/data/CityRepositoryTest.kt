@@ -5,6 +5,7 @@ import android.content.res.AssetManager
 import androidx.recyclerview.widget.DiffUtil
 import com.google.gson.Gson
 import com.klivvr.assignment.AsyncPagingDataDifferTestUtil
+import com.klivvr.assignment.mockCitiesList
 import io.mockk.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -121,5 +122,25 @@ class CityRepositoryTest {
         }
         job.cancel()
     }
+
+    @Test
+    fun `getCityCount returns 0 when prefix is blank`() = runTest {
+        val result = repository.getCityCount("")
+        assertEquals(0, result)
+    }
+
+    @Test
+    fun `getCityCount returns correct count when prefix is valid`() = runTest {
+        val prefix = "Spring"
+        val cities = mockCitiesList
+        every { trie.search(prefix) } returns cities
+
+        val result = repository.getCityCount(prefix)
+        assertEquals(2, result)
+
+        verify { trie.search(prefix) }
+    }
+
+
 
 }
