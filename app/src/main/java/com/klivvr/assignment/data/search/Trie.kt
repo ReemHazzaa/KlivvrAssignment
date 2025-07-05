@@ -1,4 +1,10 @@
-package com.klivvr.assignment.data
+package com.klivvr.assignment.data.search
+
+import com.klivvr.assignment.data.models.City
+import com.klivvr.assignment.domain.search.SearchAlgorithm
+import javax.inject.Inject
+import kotlin.collections.getOrPut
+import kotlin.text.iterator
 
 /**
  * A node in the Trie data structure.
@@ -16,7 +22,7 @@ class TrieNode {
  * length of the prefix. This is significantly more efficient than a linear scan (O(n))
  * on a large dataset of 200,000 cities, directly addressing the assignment's performance requirement.
  */
-class Trie {
+class Trie @Inject constructor(): SearchAlgorithm {
     private val root = TrieNode()
 
     /**
@@ -26,7 +32,7 @@ class Trie {
      * 2. Same prefix
      * 3. Special characters (as long as they're individual Chars).
      */
-    fun insert(city: City) {
+    override fun insert(city: City) {
         var currentNode = root
         // Converts the city name to lowercase to make the search case-insensitive.
         val name = city.name.lowercase()
@@ -48,7 +54,7 @@ class Trie {
      * @param prefix The string to search for.
      * @return A list of all cities that start with the given prefix.
      */
-    fun search(prefix: String): List<City> {
+    override fun search(prefix: String): List<City> {
         var currentNode = root
         // Convert the input prefix to lowercase(Perform search in lowercase).
         val lowerCasePrefix = prefix.lowercase()
@@ -103,7 +109,7 @@ class Trie {
      *
      * Time complexity: O(1) — all nodes become unreachable and will be garbage-collected.
      */
-    fun clear() {
+    override fun clear() {
         // Reset the root node, dropping all children and stored cities
         root.children.clear()
         root.citiesAtNode.clear()

@@ -1,29 +1,42 @@
-package com.klivvr.assignment.data
+package com.klivvr.assignment.data.repo
 
 import android.content.Context
 import android.content.res.AssetManager
 import androidx.recyclerview.widget.DiffUtil
 import com.google.gson.Gson
-import com.klivvr.assignment.AsyncPagingDataDifferTestUtil
-import com.klivvr.assignment.mockCitiesList
-import io.mockk.*
+import com.klivvr.assignment.util.AsyncPagingDataDifferTestUtil
+import com.klivvr.assignment.data.models.City
+import com.klivvr.assignment.data.models.Coordinates
+import com.klivvr.assignment.data.search.Trie
+import com.klivvr.assignment.util.citySpringfieldCA
+import com.klivvr.assignment.util.citySpringfieldUS
+import com.klivvr.assignment.util.mockCitiesList
+import io.mockk.Runs
+import io.mockk.clearAllMocks
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.test.*
+import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.test.resetMain
+import kotlinx.coroutines.test.runTest
+import kotlinx.coroutines.test.setMain
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
 import java.io.ByteArrayInputStream
 
 @OptIn(ExperimentalCoroutinesApi::class)
-class CityRepositoryTest {
+class CityRepoImplTest {
 
     private lateinit var context: Context
     private lateinit var assetManager: AssetManager
-    private lateinit var repository: CityRepository
+    private lateinit var repository: CityRepoImpl
 
     private lateinit var trie: Trie
 
@@ -63,7 +76,7 @@ class CityRepositoryTest {
 
         every { assetManager.open("cities.json") } returns inputStream
 
-        repository = CityRepository(context, trie)
+        repository = CityRepoImpl(context, trie)
     }
 
     @After
@@ -78,7 +91,7 @@ class CityRepositoryTest {
         val job = launch {
             repository.getPaginatedCities("Lo").collectLatest { pagingData ->
                 val snapshotItems = cityDiffer.snapshot(pagingData)
-                assertEquals(listOf("London"), snapshotItems.map { it.name })
+                Assert.assertEquals(listOf("London"), snapshotItems.map { it.name })
             }
         }
         job.cancel()
@@ -90,7 +103,7 @@ class CityRepositoryTest {
         val job = launch {
             repository.getPaginatedCities("").collectLatest { pagingData ->
                 val snapshotItems = cityDiffer.snapshot(pagingData)
-                assertTrue(snapshotItems.isEmpty())
+                Assert.assertTrue(snapshotItems.isEmpty())
             }
         }
         job.cancel()
@@ -103,7 +116,7 @@ class CityRepositoryTest {
             repository.getPaginatedCities("a").collectLatest { pagingData ->
                 val snapshotItems = cityDiffer.snapshot(pagingData)
                 val sorted = snapshotItems.sortedBy { it.name }
-                assertEquals(sorted, snapshotItems)
+                Assert.assertEquals(sorted, snapshotItems)
             }
         }
         job.cancel()
@@ -116,8 +129,8 @@ class CityRepositoryTest {
             // Mixed-case input; should match "London"
             repository.getPaginatedCities("lO").collectLatest { pagingData ->
                 val snapshotItems = cityDiffer.snapshot(pagingData)
-                assertEquals(1, snapshotItems.size)
-                assertEquals("London", snapshotItems.first().name)
+                Assert.assertEquals(1, snapshotItems.size)
+                Assert.assertEquals("London", snapshotItems.first().name)
             }
         }
         job.cancel()
@@ -126,21 +139,19 @@ class CityRepositoryTest {
     @Test
     fun `getCityCount returns 0 when prefix is blank`() = runTest {
         val result = repository.getCityCount("")
-        assertEquals(0, result)
+        Assert.assertEquals(0, result)
     }
 
     @Test
     fun `getCityCount returns correct count when prefix is valid`() = runTest {
         val prefix = "Spring"
-        val cities = mockCitiesList
-        every { trie.search(prefix) } returns cities
+        val expectedCities = listOf(citySpringfieldUS, citySpringfieldCA)
+        every { trie.search(prefix) } returns expectedCities
 
         val result = repository.getCityCount(prefix)
-        assertEquals(2, result)
+        Assert.assertEquals(2, result)
 
         verify { trie.search(prefix) }
     }
-
-
 
 }

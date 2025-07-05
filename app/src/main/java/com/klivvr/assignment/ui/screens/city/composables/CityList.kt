@@ -16,7 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
-import com.klivvr.assignment.data.openInMap
+import com.klivvr.assignment.data.models.openInMap
 import com.klivvr.assignment.ui.screens.city.models.UiModel
 
 @OptIn(ExperimentalFoundationApi::class)

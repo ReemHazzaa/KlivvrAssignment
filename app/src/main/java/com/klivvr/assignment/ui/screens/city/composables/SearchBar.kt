@@ -37,7 +37,12 @@ import com.klivvr.assignment.R
 import com.klivvr.assignment.ui.theme.KlivvrTheme
 
 @Composable
-fun SearchBar(query: String, onQueryChange: (String) -> Unit, modifier: Modifier = Modifier) {
+fun SearchBar(
+    query: String,
+    onQueryChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    isEnabled: Boolean
+) {
     var isFocused by remember { mutableStateOf(false) }
 
     val backgroundColor by animateColorAsState(
@@ -58,6 +63,7 @@ fun SearchBar(query: String, onQueryChange: (String) -> Unit, modifier: Modifier
     BasicTextField(
         value = query,
         onValueChange = onQueryChange,
+        enabled = isEnabled,
         modifier = modifier
             .fillMaxWidth()
             .onFocusChanged { focusState ->

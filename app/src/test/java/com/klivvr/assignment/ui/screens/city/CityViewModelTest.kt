@@ -3,10 +3,10 @@ package com.klivvr.assignment.ui.screens.city
 import androidx.paging.PagingData
 import androidx.recyclerview.widget.DiffUtil
 import app.cash.turbine.test
-import com.klivvr.assignment.AsyncPagingDataDifferTestUtil
-import com.klivvr.assignment.data.City
-import com.klivvr.assignment.data.CityRepository
-import com.klivvr.assignment.data.Coordinates
+import com.klivvr.assignment.util.AsyncPagingDataDifferTestUtil
+import com.klivvr.assignment.data.models.City
+import com.klivvr.assignment.data.repo.CityRepoImpl
+import com.klivvr.assignment.data.models.Coordinates
 import com.klivvr.assignment.ui.screens.city.models.UiModel
 import io.mockk.clearAllMocks
 import io.mockk.coEvery
@@ -32,7 +32,7 @@ import org.junit.Test
 class CityViewModelTest {
 
     private lateinit var viewModel: CityViewModel
-    private lateinit var cityRepository: CityRepository
+    private lateinit var cityRepoImpl: CityRepoImpl
 
     private val testDispatcher = StandardTestDispatcher()
 
@@ -61,17 +61,17 @@ class CityViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        cityRepository = mockk(relaxed = true)
+        cityRepoImpl = mockk(relaxed = true)
 
-        coEvery { cityRepository.loadCities() } returns Unit
-        coEvery { cityRepository.getPaginatedCities("lon") } returns flowOf(
+        coEvery { cityRepoImpl.loadCities() } returns Unit
+        coEvery { cityRepoImpl.getPaginatedCities("lon") } returns flowOf(
             PagingData.Companion.from(
                 listOf(
                     fakeCities[0]
                 )
             )
         )
-        coEvery { cityRepository.getPaginatedCities("los") } returns flowOf(
+        coEvery { cityRepoImpl.getPaginatedCities("los") } returns flowOf(
             PagingData.Companion.from(
                 listOf(
                     fakeCities[1]
@@ -79,7 +79,7 @@ class CityViewModelTest {
             )
         )
 
-        viewModel = CityViewModel(cityRepository)
+        viewModel = CityViewModel(cityRepoImpl)
     }
 
     @After
@@ -100,8 +100,8 @@ class CityViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 1) { cityRepository.loadCities() }
-        coVerify(exactly = 1) { cityRepository.getPaginatedCities("lon") }
+        coVerify(exactly = 1) { cityRepoImpl.loadCities() }
+        coVerify(exactly = 1) { cityRepoImpl.getPaginatedCities("lon") }
     }
 
     @Test
@@ -119,25 +119,25 @@ class CityViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 0) { cityRepository.getPaginatedCities("lo") }
-        coVerify(exactly = 1) { cityRepository.getPaginatedCities("los") }
+        coVerify(exactly = 0) { cityRepoImpl.getPaginatedCities("lo") }
+        coVerify(exactly = 1) { cityRepoImpl.getPaginatedCities("los") }
     }
 
     @Test
     fun `loadCities is only called once when ViewModel is created`() = runTest {
         // Already called in setup
-        coVerify(exactly = 1) { cityRepository.loadCities() }
+        coVerify(exactly = 1) { cityRepoImpl.loadCities() }
 
         // Change query — should not re-call loadCities
         viewModel.onSearchQueryChange("london")
         advanceTimeBy(300)
 
-        coVerify(exactly = 1) { cityRepository.loadCities() }
+        coVerify(exactly = 1) { cityRepoImpl.loadCities() }
     }
 
     @Test
     fun `cityPagingFlow emits empty when no results match prefix`() = runTest {
-        coEvery { cityRepository.getPaginatedCities("zzz") } returns flowOf(PagingData.Companion.empty())
+        coEvery { cityRepoImpl.getPaginatedCities("zzz") } returns flowOf(PagingData.Companion.empty())
 
         viewModel.onSearchQueryChange("zzz")
         advanceTimeBy(300)
@@ -148,7 +148,7 @@ class CityViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 1) { cityRepository.getPaginatedCities("zzz") }
+        coVerify(exactly = 1) { cityRepoImpl.getPaginatedCities("zzz") }
     }
 
     @Test
@@ -162,7 +162,7 @@ class CityViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 0) { cityRepository.getPaginatedCities(any()) }
+        coVerify(exactly = 0) { cityRepoImpl.getPaginatedCities(any()) }
     }
 
     @Test
@@ -180,9 +180,9 @@ class CityViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 1) { cityRepository.getPaginatedCities("los") }
-        coVerify(exactly = 0) { cityRepository.getPaginatedCities("l") }
-        coVerify(exactly = 0) { cityRepository.getPaginatedCities("lo") }
+        coVerify(exactly = 1) { cityRepoImpl.getPaginatedCities("los") }
+        coVerify(exactly = 0) { cityRepoImpl.getPaginatedCities("l") }
+        coVerify(exactly = 0) { cityRepoImpl.getPaginatedCities("lo") }
     }
 
     @Test
@@ -203,7 +203,7 @@ class CityViewModelTest {
         val resultsB = async { differUtil.snapshot(viewModel.cityPagingFlow.first()) }
 
         Assert.assertEquals(resultsA.await(), resultsB.await())
-        coVerify(exactly = 1) { cityRepository.getPaginatedCities("los") }
+        coVerify(exactly = 1) { cityRepoImpl.getPaginatedCities("los") }
     }
 
     @Test
@@ -221,9 +221,9 @@ class CityViewModelTest {
             cancelAndIgnoreRemainingEvents()
         }
 
-        coVerify(exactly = 1) { cityRepository.getPaginatedCities("lon") }
-        coVerify(exactly = 0) { cityRepository.getPaginatedCities("l") }
-        coVerify(exactly = 0) { cityRepository.getPaginatedCities("lo") }
+        coVerify(exactly = 1) { cityRepoImpl.getPaginatedCities("lon") }
+        coVerify(exactly = 0) { cityRepoImpl.getPaginatedCities("l") }
+        coVerify(exactly = 0) { cityRepoImpl.getPaginatedCities("lo") }
     }
 
 }

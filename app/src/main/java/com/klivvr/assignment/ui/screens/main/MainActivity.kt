@@ -1,4 +1,4 @@
-package com.klivvr.assignment
+package com.klivvr.assignment.ui.screens.main
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -22,4 +22,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-

@@ -6,9 +6,11 @@ import androidx.paging.PagingData
 import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
-import com.klivvr.assignment.data.City
-import com.klivvr.assignment.data.CityRepository
+import com.klivvr.assignment.data.models.City
+import com.klivvr.assignment.data.repo.CityRepoImpl
+import com.klivvr.assignment.domain.repo.CityRepo
 import com.klivvr.assignment.ui.screens.city.models.UiModel
+import com.klivvr.assignment.util.Constants.SEARCH_DEBOUNCE_TIME
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -28,8 +30,10 @@ import javax.inject.Inject
 )
 @HiltViewModel
 class CityViewModel @Inject constructor(
-    cityRepository: CityRepository,
+    cityRepo: CityRepo,
 ) : ViewModel() {
+
+    val isInitialLoading: StateFlow<Boolean> = cityRepo.isDataLoading
 
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
@@ -44,25 +48,25 @@ class CityViewModel @Inject constructor(
     init {
         // Initial load of all city data into the Trie
         viewModelScope.launch {
-            cityRepository.loadCities()
+            cityRepo.loadCities()
         }
 
         // This listens for query changes and updates the count separately from the list data.
         viewModelScope.launch {
             searchQuery
-                .debounce(300L) // Debounce to avoid rapid updates
+                .debounce(SEARCH_DEBOUNCE_TIME) // Debounce to avoid rapid updates
                 .collect { query ->
-                    _cityCount.value = cityRepository.getCityCount(query)
+                    _cityCount.value = cityRepo.getCityCount(query)
                 }
         }
 
         // `flatMapLatest` is perfect here. It cancels the previous search
         // and starts a new one whenever the search query changes.
         cityPagingFlow = searchQuery
-            .debounce(300L)
+            .debounce(SEARCH_DEBOUNCE_TIME)
             .flatMapLatest { query ->
                 // This function in the repository returns Flow<PagingData<City>>
-                cityRepository.getPaginatedCities(query)
+                cityRepo.getPaginatedCities(query)
             }
             .map { pagingData: PagingData<City> ->
                 // Transform each City object into a UiModel.CityItem
@@ -79,9 +83,13 @@ class CityViewModel @Inject constructor(
                     }
                     if (before == null) {
                         // Start of the list
-                        return@insertSeparators UiModel.HeaderItem(after.city.name.first().uppercaseChar())
+                        return@insertSeparators UiModel.HeaderItem(
+                            after.city.name.first().uppercaseChar()
+                        )
                     }
-                    if (before.city.name.first().uppercaseChar() != after.city.name.first().uppercaseChar()) {
+                    if (before.city.name.first().uppercaseChar() != after.city.name.first()
+                            .uppercaseChar()
+                    ) {
                         // A new letter group starts
                         UiModel.HeaderItem(after.city.name.first().uppercaseChar())
                     } else {

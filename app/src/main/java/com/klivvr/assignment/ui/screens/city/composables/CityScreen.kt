@@ -32,11 +32,14 @@ fun CityScreen(viewModel: CityViewModel = hiltViewModel()) {
         viewModel.cityPagingFlow.collectAsLazyPagingItems()
     val cityCount by viewModel.cityCount.collectAsState()
 
+    val isInitialLoading by viewModel.isInitialLoading.collectAsState()
+
     Scaffold(
         bottomBar = {
             SearchBar(
                 query = searchQuery,
                 onQueryChange = viewModel::onSearchQueryChange,
+                isEnabled = !isInitialLoading,
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 20.dp)
                     .imePadding()
@@ -44,43 +47,50 @@ fun CityScreen(viewModel: CityViewModel = hiltViewModel()) {
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-        ) {
-            CityScreenHeader(itemCount = cityCount)
+        Box(modifier = Modifier.fillMaxSize()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                CityScreenHeader(itemCount = cityCount)
 
-            Box(modifier = Modifier.weight(1f)) {
-                if (lazyPagingItems.itemCount > 0) {
-                    CityList(lazyPagingItems = lazyPagingItems)
-                }
+                Box(modifier = Modifier.weight(1f)) {
+                    if (lazyPagingItems.itemCount > 0) {
+                        CityList(lazyPagingItems = lazyPagingItems)
+                    }
 
-                // Handle Paging 3 loading/empty states
-                lazyPagingItems.loadState.apply {
-                    when {
-                        refresh is LoadState.Loading -> LoadingState()
-                        refresh is LoadState.NotLoading && lazyPagingItems.itemCount == 0 -> {
-                            if (searchQuery.isBlank()) {
-                                EmptyState(message = stringResource(R.string.start_typing_to_search_for_a_city))
-                            } else {
-                                EmptyState(
-                                    message = stringResource(
-                                        R.string.no_cities_found_for,
-                                        searchQuery
+                    // Handle Paging 3 loading/empty states
+                    lazyPagingItems.loadState.apply {
+                        when {
+                            refresh is LoadState.Loading -> if (!isInitialLoading) LoadingState()
+                            refresh is LoadState.NotLoading && lazyPagingItems.itemCount == 0 -> {
+                                if (searchQuery.isBlank()) {
+                                    if (!isInitialLoading)
+                                        EmptyState(message = stringResource(R.string.start_typing_to_search_for_a_city))
+                                } else {
+                                    EmptyState(
+                                        message = stringResource(
+                                            R.string.no_cities_found_for,
+                                            searchQuery
+                                        )
                                     )
+                                }
+                            }
+
+                            refresh is LoadState.Error -> {
+                                ErrorState(
+                                    (refresh as LoadState.Error).error.message
+                                        ?: stringResource(R.string.an_unknown_error_occurred)
                                 )
                             }
                         }
-
-                        refresh is LoadState.Error -> {
-                            ErrorState(
-                                (refresh as LoadState.Error).error.message
-                                    ?: stringResource(R.string.an_unknown_error_occurred)
-                            )
-                        }
                     }
                 }
+            }
+            // This will show the progress bar on top of everything when loading
+            if (isInitialLoading) {
+                LoadingState()
             }
         }
     }

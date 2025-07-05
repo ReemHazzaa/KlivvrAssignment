@@ -1,4 +1,4 @@
-package com.klivvr.assignment
+package com.klivvr.assignment.util
 
 import androidx.paging.AsyncPagingDataDiffer
 import androidx.paging.PagingData

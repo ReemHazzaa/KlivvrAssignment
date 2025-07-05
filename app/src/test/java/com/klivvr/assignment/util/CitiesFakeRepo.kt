@@ -1,7 +1,7 @@
-package com.klivvr.assignment
+package com.klivvr.assignment.util
 
-import com.klivvr.assignment.data.City
-import com.klivvr.assignment.data.Coordinates
+import com.klivvr.assignment.data.models.City
+import com.klivvr.assignment.data.models.Coordinates
 
 val mockCitiesList: List<City>
     get() = listOf(

@@ -1,10 +1,11 @@
-package com.klivvr.assignment.data
+package com.klivvr.assignment.data.pagingSource
 
 import androidx.paging.PagingSource
 import androidx.paging.PagingState
+import com.klivvr.assignment.data.models.City
 
 /**
- * A [PagingSource] implementation for paginating a static list of [City] objects.
+ * A [androidx.paging.PagingSource] implementation for paginating a static list of [com.klivvr.assignment.data.models.City] objects.
  *
  * This class divides the given list of cities into pages of data, suitable for use with the
  * Android Paging 3 library.

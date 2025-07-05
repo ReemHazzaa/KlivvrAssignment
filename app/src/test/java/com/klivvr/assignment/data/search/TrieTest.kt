@@ -1,15 +1,17 @@
-package com.klivvr.assignment.data
+package com.klivvr.assignment.data.search
 
-import com.klivvr.assignment.cityLodz
-import com.klivvr.assignment.cityLome
-import com.klivvr.assignment.cityLondon
-import com.klivvr.assignment.cityLosAngeles
-import com.klivvr.assignment.citySpringfieldCA
-import com.klivvr.assignment.citySpringfieldUS
-import org.junit.Assert.*
-import org.junit.Before
-import com.klivvr.assignment.mockCitiesList
+import com.klivvr.assignment.util.cityLodz
+import com.klivvr.assignment.util.cityLome
+import com.klivvr.assignment.util.cityLondon
+import com.klivvr.assignment.util.cityLosAngeles
+import com.klivvr.assignment.util.citySpringfieldCA
+import com.klivvr.assignment.util.citySpringfieldUS
+import com.klivvr.assignment.data.models.City
+import com.klivvr.assignment.data.models.Coordinates
+import com.klivvr.assignment.util.mockCitiesList
 import org.junit.After
+import org.junit.Assert
+import org.junit.Before
 import org.junit.Test
 
 class TrieTest {
@@ -30,32 +32,32 @@ class TrieTest {
     @Test
     fun `search returns correct cities for valid prefix`() {
         val results = trie.search("Lo")
-        assertEquals(4, results.size)
-        assertTrue(results.contains(cityLondon))
-        assertTrue(results.contains(cityLosAngeles))
-        assertTrue(results.contains(cityLome))
-        assertTrue(results.contains(cityLodz))
+        Assert.assertEquals(4, results.size)
+        Assert.assertTrue(results.contains(cityLondon))
+        Assert.assertTrue(results.contains(cityLosAngeles))
+        Assert.assertTrue(results.contains(cityLome))
+        Assert.assertTrue(results.contains(cityLodz))
     }
 
     @Test
     fun `search is case-insensitive`() {
         val results = trie.search("loS")
-        assertEquals(1, results.size)
-        assertTrue(results.contains(cityLosAngeles))
+        Assert.assertEquals(1, results.size)
+        Assert.assertTrue(results.contains(cityLosAngeles))
     }
 
     @Test
     fun `search returns both cities with same name`() {
         val results = trie.search("spring")
-        assertEquals(2, results.size)
-        assertTrue(results.contains(citySpringfieldUS))
-        assertTrue(results.contains(citySpringfieldCA))
+        Assert.assertEquals(2, results.size)
+        Assert.assertTrue(results.contains(citySpringfieldUS))
+        Assert.assertTrue(results.contains(citySpringfieldCA))
     }
 
     @Test
     fun `search returns empty list for unmatched prefix`() {
         val results = trie.search("Zur")
-        assertTrue(results.isEmpty())
+        Assert.assertTrue(results.isEmpty())
     }
 
     @Test
@@ -72,8 +74,8 @@ class TrieTest {
         )
         trie.insert(newCity)
         val results = trie.search("Zan")
-        assertEquals(1, results.size)
-        assertEquals(newCity, results.first())
+        Assert.assertEquals(1, results.size)
+        Assert.assertEquals(newCity, results.first())
     }
 
     @Test
@@ -108,37 +110,37 @@ class TrieTest {
         val result2 = trie.search("Saint-")
         val result3 = trie.search("Dún")
 
-        assertEquals(1, result1.size)
-        assertEquals(cityWithAccents, result1.first())
+        Assert.assertEquals(1, result1.size)
+        Assert.assertEquals(cityWithAccents, result1.first())
 
-        assertEquals(1, result2.size)
-        assertEquals(cityWithHyphen, result2.first())
+        Assert.assertEquals(1, result2.size)
+        Assert.assertEquals(cityWithHyphen, result2.first())
 
-        assertEquals(1, result3.size)
-        assertEquals(cityWithApostrophe, result3.first())
+        Assert.assertEquals(1, result3.size)
+        Assert.assertEquals(cityWithApostrophe, result3.first())
     }
 
     @Test
     fun `search for exact match returns correct cities`() {
         val results = trie.search("London")
-        assertEquals(1, results.size)
-        assertEquals(cityLondon, results[0])
+        Assert.assertEquals(1, results.size)
+        Assert.assertEquals(cityLondon, results[0])
     }
 
     @Test
     fun `search for empty prefix returns all cities`() {
         val results = trie.search("")
-        assertTrue(results.size >= 6)
-        assertTrue(results.contains(cityLondon))
-        assertTrue(results.contains(cityLodz))
-        assertTrue(results.contains(cityLosAngeles))
+        Assert.assertTrue(results.size >= 6)
+        Assert.assertTrue(results.contains(cityLondon))
+        Assert.assertTrue(results.contains(cityLodz))
+        Assert.assertTrue(results.contains(cityLosAngeles))
     }
 
     @Test
     fun `clear removes all cities from trie`() {
         trie.clear()
         val results = trie.search("Lo")
-        assertTrue(results.isEmpty())
+        Assert.assertTrue(results.isEmpty())
     }
 
 }

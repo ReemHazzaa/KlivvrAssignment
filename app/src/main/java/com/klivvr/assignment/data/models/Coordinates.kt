@@ -1,4 +1,4 @@
-package com.klivvr.assignment.data
+package com.klivvr.assignment.data.models
 
 import com.google.gson.annotations.SerializedName
 

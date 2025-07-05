@@ -1,8 +1,10 @@
 package com.klivvr.assignment.di
 
 import android.content.Context
-import com.klivvr.assignment.data.CityRepository
-import com.klivvr.assignment.data.Trie
+import com.klivvr.assignment.data.repo.CityRepoImpl
+import com.klivvr.assignment.data.search.Trie
+import com.klivvr.assignment.domain.repo.CityRepo
+import com.klivvr.assignment.domain.search.SearchAlgorithm
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -16,17 +18,27 @@ object AppModule {
 
     @Singleton
     @Provides
-    fun provideCityRepo(
-        @ApplicationContext context: Context,
-        trie: Trie,
-    ): CityRepository {
-        return CityRepository(context, trie)
+    fun provideCityRepo(cityRepoImpl: CityRepoImpl): CityRepo {
+        return cityRepoImpl
     }
 
     @Singleton
     @Provides
-    fun provideTrie(): Trie {
-        return Trie()
+    fun provideCityRepoImpl(
+        @ApplicationContext context: Context,
+        searchAlgorithm: SearchAlgorithm,
+    ): CityRepoImpl {
+        return CityRepoImpl(context, searchAlgorithm)
     }
+
+    @Singleton
+    @Provides
+    fun provideSearchAlgorithm(searchAlgoImpl: Trie): SearchAlgorithm {
+        return searchAlgoImpl
+    }
+
+    @Singleton
+    @Provides
+    fun provideTrie(): Trie = Trie()
 
 }
