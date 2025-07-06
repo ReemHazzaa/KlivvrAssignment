@@ -26,10 +26,12 @@ val TitleTextColorLight = Color(0xFF333333)
 val TitleTextColorDark = Color(0xFFEAEAEA)
 
 val FlagBackgroundColor = Color(0xFFECECEF)
+val CityLightBackgroundColor = Color(0x50ECECEF)
+val CityDarkBackgroundColor = Color(0xFF444444)
 
 // --- Search Bar Colors ---
 // Light Theme
-val SearchBarUnfocusedBackgroundLight = Color(0xFFF5F5F5)
+val SearchBarUnfocusedBackgroundLight = Color(0xFFE0E0E0)
 val SearchBarFocusedContentLight = Color(0xFF333333)
 val SearchBarUnfocusedContentLight = Color(0xFF888888)
 val SearchBarFocusedBackgroundLight = Color.White // The focused background is white

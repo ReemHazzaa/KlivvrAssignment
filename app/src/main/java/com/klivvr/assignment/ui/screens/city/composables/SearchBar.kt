@@ -40,10 +40,11 @@ import com.klivvr.assignment.ui.theme.KlivvrTheme
 fun SearchBar(
     query: String,
     onQueryChange: (String) -> Unit,
+    isFocused: Boolean,
+    onFocusChange: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
     isEnabled: Boolean
 ) {
-    var isFocused by remember { mutableStateOf(false) }
 
     val backgroundColor by animateColorAsState(
         targetValue = if (isFocused) KlivvrTheme.extendedColors.searchBarFocusedBackground
@@ -67,7 +68,7 @@ fun SearchBar(
         modifier = modifier
             .fillMaxWidth()
             .onFocusChanged { focusState ->
-                isFocused = focusState.isFocused
+                onFocusChange(focusState.isFocused)
             },
         textStyle = TextStyle(
             color = KlivvrTheme.extendedColors.searchBarFocusedContent,

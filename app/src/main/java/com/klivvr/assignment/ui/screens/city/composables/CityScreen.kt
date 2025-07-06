@@ -1,15 +1,22 @@
 package com.klivvr.assignment.ui.screens.city.composables
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -23,6 +30,8 @@ import com.klivvr.assignment.ui.screens.city.composables.uiState.EmptyState
 import com.klivvr.assignment.ui.screens.city.composables.uiState.ErrorState
 import com.klivvr.assignment.ui.screens.city.composables.uiState.LoadingState
 import com.klivvr.assignment.ui.screens.city.models.UiModel
+import com.klivvr.assignment.ui.theme.KlivvrTheme
+import com.klivvr.assignment.ui.theme.cityBackgroundColor
 
 @Composable
 fun CityScreen(viewModel: CityViewModel = hiltViewModel()) {
@@ -34,18 +43,42 @@ fun CityScreen(viewModel: CityViewModel = hiltViewModel()) {
 
     val isInitialLoading by viewModel.isInitialLoading.collectAsState()
 
+    var isSearchBarFocused by remember { mutableStateOf(false) }
+    val searchBarVerticalPadding by animateDpAsState(
+        targetValue = if (isSearchBarFocused) 0.dp else 20.dp,
+        label = "searchBarVerticalPadding"
+    )
+    val searchBarHorizontalPadding by animateDpAsState(
+        targetValue = if (isSearchBarFocused) 0.dp else 16.dp,
+        label = "searchBarHorizontalPadding"
+    )
+
     Scaffold(
         bottomBar = {
-            SearchBar(
-                query = searchQuery,
-                onQueryChange = viewModel::onSearchQueryChange,
-                isEnabled = !isInitialLoading,
-                modifier = Modifier
-                    .padding(horizontal = 16.dp, vertical = 20.dp)
-                    .imePadding()
-            )
+            Column(
+                modifier = Modifier.background(MaterialTheme.colorScheme.surface)
+            ) {
+                AnimatedVisibility(visible = !isSearchBarFocused) {
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        // Use the same color you chose for the unfocused search bar background.
+                        color = KlivvrTheme.extendedColors.searchBarUnfocusedBackground
+                    )
+                }
+
+                SearchBar(
+                    query = searchQuery,
+                    onQueryChange = viewModel::onSearchQueryChange,
+                    isEnabled = !isInitialLoading,
+                    isFocused = isSearchBarFocused,
+                    onFocusChange = { isSearchBarFocused = it },
+                    modifier = Modifier
+                        .padding(horizontal = searchBarHorizontalPadding, vertical = searchBarVerticalPadding)
+                        .imePadding()
+                )
+            }
         },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = MaterialTheme.colorScheme.cityBackgroundColor,
     ) { paddingValues ->
         Box(modifier = Modifier.fillMaxSize()) {
             Column(

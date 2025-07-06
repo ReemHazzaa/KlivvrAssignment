@@ -23,7 +23,7 @@ fun CityScreenHeader(itemCount: Int) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 16.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 25.dp)
     ) {
         Text(
             text = stringResource(R.string.city_search),

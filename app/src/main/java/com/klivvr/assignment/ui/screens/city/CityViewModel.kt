@@ -7,7 +7,6 @@ import androidx.paging.cachedIn
 import androidx.paging.insertSeparators
 import androidx.paging.map
 import com.klivvr.assignment.data.models.City
-import com.klivvr.assignment.data.repo.CityRepoImpl
 import com.klivvr.assignment.domain.repo.CityRepo
 import com.klivvr.assignment.ui.screens.city.models.UiModel
 import com.klivvr.assignment.util.Constants.SEARCH_DEBOUNCE_TIME

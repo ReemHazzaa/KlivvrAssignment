@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.klivvr.assignment.R
+import com.klivvr.assignment.ui.theme.titleTextColor
 
 @Composable
 fun LoadingState() {
@@ -29,7 +30,8 @@ fun LoadingState() {
             Text(
                 text = stringResource(R.string.loading_cities),
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(top = 16.dp)
+                modifier = Modifier.padding(top = 16.dp),
+                color = MaterialTheme.colorScheme.titleTextColor
             )
         }
     }

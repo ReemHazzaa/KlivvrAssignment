@@ -27,6 +27,23 @@ val ColorScheme.flagBackgroundColor: Color
     get() =
         if (isSystemInDarkTheme()) FlagBackgroundColor else FlagBackgroundColor
 
+val ColorScheme.cityBackgroundColor: Color
+    @Composable
+    @ReadOnlyComposable
+    get() =
+        if (isSystemInDarkTheme()) CityDarkBackgroundColor else CityLightBackgroundColor
+
+val ColorScheme.stickyLetterStrokeColor: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = if (isSystemInDarkTheme()) TitleTextColorLight else Color.LightGray
+
+val ColorScheme.stickyLetterTextColor: Color
+    @Composable
+    @ReadOnlyComposable
+    get() = if (isSystemInDarkTheme()) TitleTextColorLight else Color.Gray
+
+
 // DATA CLASS FOR CUSTOM COLORS
 @Immutable
 data class ExtendedColors(

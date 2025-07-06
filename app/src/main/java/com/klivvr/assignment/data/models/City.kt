@@ -5,7 +5,6 @@ import android.content.Intent
 import android.net.Uri
 import com.google.gson.annotations.SerializedName
 import androidx.core.net.toUri
-import com.klivvr.assignment.data.models.Coordinates
 
 /**
  * Represents the structure of a single city entry in the JSON file.

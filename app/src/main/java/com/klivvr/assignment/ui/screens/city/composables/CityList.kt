@@ -1,19 +1,13 @@
 package com.klivvr.assignment.ui.screens.city.composables
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.paging.compose.LazyPagingItems
 import com.klivvr.assignment.data.models.openInMap
@@ -25,42 +19,31 @@ fun CityList(lazyPagingItems: LazyPagingItems<UiModel>) {
     val context = LocalContext.current
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 16.dp),
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        items(lazyPagingItems.itemCount, key = { index ->
-            // Generate a stable key
+        val itemCount = lazyPagingItems.itemCount
+        for (index in 0 until itemCount) {
             val item = lazyPagingItems.peek(index)
-            when (item) {
-                is UiModel.CityItem -> "city_${item.city.id}"
-                is UiModel.HeaderItem -> "header_${item.letter}"
-                else -> "placeholder_$index"
-            }
-        }) { index ->
-            val item = lazyPagingItems[index]
-            when (item) {
-                is UiModel.CityItem -> {
-                    CityRow(
-                        city = item.city,
-                        onCityClick = { item.city.openInMap(context) }
-                    )
-                }
 
-                is UiModel.HeaderItem -> {
-                    // This is our sticky header
-                    Text(
-                        text = item.letter.toString(),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(MaterialTheme.colorScheme.background)
-                            .padding(vertical = 8.dp),
-                        color = MaterialTheme.colorScheme.primary,
-                        fontWeight = FontWeight.Bold
-                    )
+            // Check the type of item to decide which function to call
+            if (item is UiModel.HeaderItem) {
+                // Use the special stickyHeader function for headers
+                stickyHeader(key = "header_${item.letter}") {
+                    HeaderItemRow(letter = item.letter.toString())
                 }
-
-                null -> {
-                    // Placeholder for when data is loading
+            } else if (item is UiModel.CityItem) {
+                // Use the regular item function for cities
+                item(key = "city_${item.city.id}") {
+                    // It's important to use lazyPagingItems[index] here to ensure
+                    // the Paging library loads the next page when needed.
+                    val cityItem = lazyPagingItems[index] as? UiModel.CityItem
+                    if (cityItem != null) {
+                        CityItemRow(
+                            city = cityItem.city,
+                            onCityClick = { cityItem.city.openInMap(context) }
+                        )
+                    }
                 }
             }
         }

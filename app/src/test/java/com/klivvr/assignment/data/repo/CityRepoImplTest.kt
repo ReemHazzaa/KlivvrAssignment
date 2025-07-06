@@ -10,7 +10,6 @@ import com.klivvr.assignment.data.models.Coordinates
 import com.klivvr.assignment.data.search.Trie
 import com.klivvr.assignment.util.citySpringfieldCA
 import com.klivvr.assignment.util.citySpringfieldUS
-import com.klivvr.assignment.util.mockCitiesList
 import io.mockk.Runs
 import io.mockk.clearAllMocks
 import io.mockk.every
